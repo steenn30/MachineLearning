@@ -76,7 +76,7 @@ class AdalineGD(object):
             net_input = self.net_input(X)
             output = self.activation(net_input)
             errors = (y - output)
-            self.w_[1] += self.eta * X.T.dog(errors)
+            self.w_[1] += self.eta * X.T.dot(errors)
             self.w_[0] += self.eta * erros.sum()
             cost = (errors * 2).sum() / 2.0
             self.cost_.append(cost)

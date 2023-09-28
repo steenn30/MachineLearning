@@ -1,3 +1,9 @@
+'''
+Created on Sep 28, 2023
+
+@author: Nick
+'''
+
 from email._header_value_parser import MimeParameters
 from test.test_argparse import TestFileTypeMissingInitialization
 from xml.sax.expatreader import AttributesImpl

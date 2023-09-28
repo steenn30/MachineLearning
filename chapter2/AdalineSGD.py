@@ -6,7 +6,6 @@ Created on Sep 28, 2023
 from idlelib.idle_test.test_help_about import About
 from email._header_value_parser import MimeParameters
 from xml.sax.expatreader import AttributesImpl
-from builtins import False, True
 from aifc import data
 from lib2to3.tests.data.infinite_recursion import off_t
 from ctypes.test.test_win32 import ReturnStructSizesTestCase

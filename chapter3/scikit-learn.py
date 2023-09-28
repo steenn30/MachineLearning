@@ -26,6 +26,11 @@ Created on Sep 28, 2023
     ---------------------------------------
     -  x : feature matrix - pedal length and petal width
     -  y  : vector array -  class labels of species
+    
+    
+    Resources
+    ---------------------------
+        -http://scikit-learn.org/stable
 
 """
 from sklearn import datasets

@@ -88,6 +88,9 @@ print('Misclassified examples: %d' % (y_test != y_pred).sum())
     
     Overfitting is when the model captures the patterns in the training data well 
     butfails to generalize well to unseen data
+    
+    Perceptron never converges if the classes are not perfectly linearly separable
+    
 '''
 
 

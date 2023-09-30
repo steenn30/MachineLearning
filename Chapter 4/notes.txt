@@ -1,0 +1,133 @@
+		scikit-learn was created to use NumPy arrays only
+			- it can sometimes be more convenient to preprocess data using pandas' DataFrame
+			- NumPy is just more mature in scikit-learn
+			- you can access NumPy array with DataFrame.values
+		
+		
+		You can drop incomplete rows using DataFrame.dropna(axis=0)
+			- axis argument equal to 1 will drop columns with atleast one null/NaN
+			
+		# only drop rows where all columns are NaN
+		# (returns the whole array here since we don't
+		# have a row with all values NaN)
+		>>> df.dropna(how='all')
+		
+		#drop rows that have fewwer than 4 real values
+		>>> df.dropna(thresh=4)
+		
+		# only drop rows where NaN appear in specific columns (here: 'C')
+		>>> df.dropna(subset=['C'])
+		
+		Interpolation
+			- Might not be a good idea to remove data just because some is missing
+			- ***mean interpolation*** is where we simply replace the missing values
+									   with the mean values of the entire feature column
+								   
+		CODE
+		----------------------------------------
+		>>> from sklearn.impute import SimpleImputer
+		>>> import numpy as np
+		>>> imr = SimpleImputer(missing_values=np.nan, strategy='mean')
+		>>> imr = imr.fit(df.values)
+		>>> imputed_data = imr.transform(df.values)
+		>>> imputed_data
+		
+		- Other options for the strategy parameter are media or most-frequent
+		- Pandas has a similiar command with "df.fillna(df.mean()"
+	
+		  SimpleImputer class belongs to the so-called transformer classes in scikit-learn
+			- transormer classes are for data transformations.
+			- 2 important functions
+					- fit : learn the parameters from the training data
+					- transform : uses thos parameters to transform the data
+			- Any data array that is to be transformed needs to have the same 
+			  number of features as the data array that was used to fit the model
+			  
+			-Estimators are similar to transformers.
+				- these have a predict and can also have a transform funciton
+			
+	
+	
+		Ordinal vs. Nominal features
+		-----------------------------------
+		  - ordinal : categorical values that can be sorted or ordered
+		  - nominal : these don't usually apply any order
+			- T-shirt color is nominal because red is not larger than blue
+		
+		
+		Mapping ordinal features
+		----------------------------------
+			- To interpret ordinal features correctly, we need to 
+			  convert the categorical string values into integers
+			  
+			- We can simply enumerate class labels since class labels are not ordinal
+			- use a reverse-mapping dictionary to convert between the 2 representations
+					-LabelEncoder class in scikit-learn can do thsi.
+							>>> from sklearn.preprocessing import LabelEncoder
+							>>> class_le = LabelEncoder()
+							>>> y = class_le.fit_transform(df['classlabel'].values)
+							fit_transform is just a shortcut for calling fit and transform separately
+							We can use inverse_transofmr to convert back to real class labels
+							>>> class_le.inverse_transform(y)
+	
+		Performing one-hot encoding on nominal features
+		--------------------------------------------------
+			- Using a LabelEncoder on color, for example, will have the learning algorithm think 
+			  that some colors are larger than other colors.
+			  
+			  The idea behind one-hot encoding is to create a new dummy feature for
+			  each unique value in the nominal feature column.
+			  
+			  so, color blue is represented by [blue=1, red=0, green=0]
+			  	- we can use the OneHotEncoder class inside scikit-learn's preprocessing module
+		  	
+		  	CODE
+		  	----------------------------------
+		  	>>> from sklearn.preprocessing import OneHotEncoder
+		  	>>> X = df[['color,'size', 'price']].values
+		  	>>> color_ohe = OneHotEncoder()
+		  	>>> color_ohe.fit_transform(X[:,0].reshape(-1,1)).toarray()
+		  	
+		  	
+		  	The above only does work on a single column.
+		  	If we want to selectively transform columns in a multi-feature array,
+		  	we can use the ColumnTransformer, which accepts a list of (name,transformer,column(s))
+		  	
+		  	>>> from sklearn.compose import ColumnTransofrmer
+		  	>>> X - df[['color', 'size', 'price']].values
+		  	>>> c_transf = ColumnTransofrmer([
+		  			('onehot', OneHotEncoder(), [0]),
+		  			('nothing', 'passthrough', [1,2])
+		  	])
+		  	>>> c_trans.fit_transform(X).astype(float)
+		  	
+		  	-   In the above, we specified that we want tomodify only the 
+		  		first column and leave the other two columns untouched via 
+		  		the 'passthrough' argument	
+		  	
+		  	- get_dummies method is implemented in pandas
+		  		- converts string columns and leaves all other columns unchanged:
+		  			>>>pd.get_dummies(df[['price','color','size']])
+		  			
+		  	
+		    - one hot encoding introduces multicolinearity, which is a problem for certain methods
+		  		-for example: methods that require matrix inversion
+		  		
+		    - Highly coorelated matrices are computationally difficult to invert
+		  		- this leads to numerically unstable estimates
+		  		- reduce coorelation by removing a feature column
+		  				-for example: if you remove blue, and the feature column 
+		  				 is red=0, green=0, then it must be blue, right?
+		  
+		    - get_dummies as a param drop_first (true/false)
+		    - drop a redundant columne by setting
+		  		- drop='first'
+		  		- categories='auto'
+		  		
+		  		
+		  		
+		  		
+		  		
+		  		
+		  		
+		  		

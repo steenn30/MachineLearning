@@ -174,9 +174,133 @@
 	
 	Different ensemble methods include *bagging* and *boosting*
 	
-	rnadom forest algorithm is known for its good scalability and ease of use
+	random forest algorithm: known for its good scalability and ease of use
+		- A random forest can be considered as an ensemble of decision trees
+	
+	Can be summarized in 4 steps:
+		1. Draw a random bootstrap sample of size n (rnadomly choose n examples from the trianing dataset with replacement. 
+		2. Grow a decisiuon tree from the bootstrap sample. At each node:
+			a. Randomly sleect d features without replacement
+			b.  Split the n9ode using the feature that proivides the best split 
+				according to the objective function, for instance, maximizing the information gain
+		3. Repeat steps 1-2 k times.
+		4. Aggregate the predicition by each tree to assign the class label by 
+			majority vote. 
+			
+		Note: 	on step 2, we don't evaluate all features to determine the best split at each node,
+				we only consider a random subset of those
+
+		Replacement just means you put the item back into the collection after each selection
+		
+		Typically, the larger the number of trees, the better the performance of the random forest
+		classifier at the expense of an increased hyperparameter cost.
+		
+		Don't need to prone since the ensemble model is quite robust to noise from the individual 
+		decision trees
+		
+		Optimize random forest through (step 1) the number of features, d, 
+		that are randomly chosen for each split (step 2.a)
+		
+		Via the ample size, n, of the bootstrap sample, we control 
+		he bias-variance tradeoff of the random forest
+		
+		Decreasing bootstrap size increases diversity of the individual trees
+		
+		Usually, size of the bootstrap model is choosen to be equal to 
+		the number of training exmaples in OG training set
+		
+		CODE
+		------------------------------
+		from sklearn.ensemble import RandomForestClassifier
+		forest = RandomForestClassifier(criterion='gini'
+										n_estimators=25,
+										random_state = 1,
+										n_jobs=2)
+		
+		forest.fit(X_train, y_train)
+		plot_decision_regions(X_combined, y_combined,
+								classifier=forest, test_idx=range(105,150))
+		
+		plt.xlabel('petal length [cm]')
+		plt.ylabel('petal width [cm]')
+		plt.legend(loc='upper left')
+		plt.tight_layout()
+		plt.show()
+		
+		Using the preceding code, we trained a random forest form 25 decison tres via the n_estimators
+		parameter and used the Gini immpurity measure as a criterion to split the nodes.
+		Although we are growing a very small random forest from a very small training dataset,
+		we used the n_jobs param for demonstration purposes, which allows us to parrellelize 
+		the model training using multiple cores of our computer (here, 2 cores)
+		
+		
+	
+	K-nearest neighbors - a lazy learning algorithm
+	------------------------------------------------------------
+	Called lazy learning becaause it doesn't learn a discriminative function from
+	the training data but memorizes the trianing dataset instead.
 	
 
+	Summarized in these steps:
+		1. Choose the number of k and a distance metric
+		2. Find the k-nearest neighbors of the data record that we want to classify
+		3. Assign the class label by majority vote
+		
+	Advantages of memory based approach: classifier immediately adapts as we collect new training data.
+	
+										***Downside is that computational complexity for classifying 
+										new examples grows linearly with the number of examples in 
+										the training data set
+										
+										Storage space could also be an issue
+	
+	k-d trees
+	---------------------
+	An Algorithm for Finding the BEst Matches in Logarithmic Expected Time, J.H Friedman, J.L. Bentley, and R.A Finkel,
+	ACM Trainsactions on matehmatical software (TOMS), 3(3):209-226,1977
+	
+	
+	Parametric vs. Nonparametric models
+	--------------------------------------------------
+	parametric : estimate parameters from the training dataset to learn a function that can classify 
+				 new data points without requiring the original training dataset anymore
+	
+	nonparametric: can't be characterized by a fixed set of parameters, and the number of parameters
+				   grows with the training data.
+				   
+				   		examples:tree classifier/ random forst and the kernel SVM
+	
+	
+	Implement KNN model using Euclidean Distance metric
+	-------------------------------------------------------------------------
+	from sklearn.neightbors import KNeighborsClassifier
+	knn = KNeighborsClassifer (n_neighbors = 5, p=2, metric = 'minkowski')
+	knn.fit(X_train_std, y_train)
+	plot_decision_regions(X_comnbined_std, y_combined, classifier=knn, test_idx=range(105,150)
+	plt.xlabel('petal length [standardized]')
+	plt.ylabel('petal width [standardized]')
+	plt.legend(loc='upper left')
+	plt.tight_layout()
+	plt.show()
+	
+	
+	Resolving ties: In the case of a tie, the scikit-learn implementation of the KNN algorithm
+	will prefer the neighbors with a closer distnace to thbe data record to be classified. if the neighgbros havf similkar
+	distances, the algorithm will choose the class lkabel that ocmes first in the training dataset.
+	
+	Euclidean distance : p=2
+	Manhattan distance : p=1
+	
+	More metrics:
+		https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.DistanceMetric.html
+	
+	The curse of dimensionality : this is what makes knn prone to overfitting.
+	
+								  This phenomena is classified by the features space being 
+								  increasingly sparse for an increasing number of dimension of a fixed-size training dataset
+								  
+								  Can use feature selection and dimensionality reduction techniques to help us to avoid this
+				   		
 
 
 

@@ -297,7 +297,8 @@
 	The curse of dimensionality : this is what makes knn prone to overfitting.
 	
 								  This phenomena is classified by the features space being 
-								  increasingly sparse for an increasing number of dimension of a fixed-size training dataset
+								  increasingly sparse for an increasing number of dimensions 
+								  of a fixed-size training dataset
 								  
 								  Can use feature selection and dimensionality reduction techniques to help us to avoid this
 				   		

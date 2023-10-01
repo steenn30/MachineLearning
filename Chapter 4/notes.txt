@@ -124,10 +124,145 @@
 		  		- drop='first'
 		  		- categories='auto'
 		  		
+		  	Encoding ordinal features
+		  	---------------------------------------
+		  	Sometimes we are unsure about numerical differences of two categories or the 
+		  	difference is undefined, we can also encode using a threshold encoding
+		  	with 0/1 values.
+		  	
+		  	such as "x > M" and x > L"
+		  	
+		  	We acn apply method of pandas' DataFrames to write custom lambda expressions in order to encode these vairables uisng the value-threshold approach:
+		  	
+		  	>>> df['x > M'] = df['size'].apply{
+		  		...	lambda x: 1 if x in {'L', 'XL'} else 0}
+		  
+		  	>>> df['x > M'] = df['size'].apply{
+		  		...	lambda x: 1 if x in {'L', 'XL'} else 0}		
+		  	>>> del df['size']
+		  	>>> df
+		  
+		 
+		 
+		 	Feature scaling is crucial
+		 		- Decision trees and random forests don't need to worry about feature scaling
+		 		
+		 		2 common approaches:
+		 			-normalization : rescaling of features to a range of [0,1] (min/max scaling)
+		 				
+		 			-standardization :  center the feature columns at mean 0 with standard deviation 1 
+		 								so that the feature columns have the same parameters as a 
+		 								standard normal distribution (zero mean and unit vairance), 
+		 								which makes it easier to learn the weights.
+		 								
+		 								Furthermore, standardization mainstains useful information 
+		 								about outliers and makes the algorithm less sensitive to 
+		 								them in constrast to min-max scaling, which scales the data 
+		 								to a lmited range of values.
+  			StandardScaler class
+  			-------------------------
+  			>>> from sklearn.preprocessing import StandardScaler
+  			>>> stdsc = StandardScaler()
+  			>>> X_train_std = stdsc.fit_transform(X_train)
+  			>>> X_test_std = stdsc.transform(X_test)
+  	
+  	
+	  		RobustScaler - good for small datasets with many outliers. also good for datasets prone to overfitting.
+	  						- RobustScaler removes median value and scales the dataset 
+	  						  according to the 1st and 3rd quartile of the dataset 
+	  						  (25th and 75th quantile)
+	  						- makes more extreme values and outliers less pronounced
+	  						
+	  						-Resource
+	  							- https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html
 		  		
+		  Selecting meaningful Features
+		  --------------------------------------
+		  	If we notice that a model performs much better on a training dataset than on the test dataset, 
+		  	this observation is a strong indicator of overfitting.
+		  	
+		  	Overfitting means the model fits the parameters too closely with regard to 
+		  	the particular observations in the training dataset, nut does not generalize well to new data
+		  		- this means the model has a high variance.
 		  		
+		  	Common solutions to reduce the generalization error are as follows:
+		  		- Collect more training data
+		  		- Introduce a penalty for complexity via regularization
+		  		- Choose a simpler model with fewer parameters
+		  		- Reduce the dimensionality of the data
+		  	
+		  	Here, we will look at common ways to reduce overfitting by regularization and dimensionality 
+		  	reduction via feature selection, which leads to simpler models by requiring few parameters	
+		  	to be fitted to the data
+		  	
+		 L1 and L2 regularization as penalties against model complexity
+		 -----------------------------------------------------------------
+		  - L2 regularization penalizes large individual weights
+		  - L1 regularization usually yields sparse feature vectors 
+		  	and most feature weights will be zero
 		  		
+		  - Sparsity can be useful in practice if we have a high-dimensional dataset 
+		  	with many features that are irrelevant, espiecally in cases where we have 
+		  	more irrelevanbt dimeonsions than training examples	
 		  		
-		  		
-		  		
-		  		
+		  - Regularization is adding a penalty term to the cost function to encourage smaller weights; 
+		  	in other words, we penalize large weights. Thus, bu increasing th regulariazation strength 
+		  	via the regularization parameter, lambda, we shrink the weights toward zero and decrease the 
+		  	dependence of our model on the training data. Let's illustrate this concept in the following 
+		  	figure for the L2 penalty term		
+		  	
+		  	Great resource for L1 and L2 regularization
+		  		: 	Section 3.4, The Elements of Statistical Learning, 
+		  			Trevor Hastie, Rober Tibshirani, and Jerome Friedman, 
+		  			Springer Science+Business Media, 2009
+		  			
+		  
+		  Sequential feature selection algorithms
+		  -----------------------------------------
+		  	Alternative way to reduce the complexity of the model and avoid 
+			Overfitting is dimensionality reduction via feature selection
+				- good for unregualized models
+				
+			Feature selection - selecting a subset of the oringinal features
+			Feature extraction - we derive information from the feature set to construct a new feature spce
+			
+			Sequential feature selection algorithms are a family of greedy search algorithms
+					- These algos are used to reduce an initial d-dimensional 
+					feature space to a k-dimensional feature subspace where k<d 
+					
+				A classic sequential feature selection algorithm is sequential backward selection(SBS), 
+				which aims to reduce the dimensionality of the initial feature subspace with a minimum
+			 	decay in the performance of the calssifier to improve upon computational efficiency.
+			  
+			 	In certain casses, SBS can even imporve the predictive poower of the model if a model
+			 	suffers from overfitting
+			 	
+			 	Greedy search algorithms
+			 	-----------------------------------
+			 	Greddy algorithms make locally optimal choises at each
+			 	stage of a combinatorial search problem and generally uyeild a
+			 	suboptimal solution to the problem, in constrast to exhaustive search algorithms, which evaluate all possible combinations
+			 	and are guaranteed to find the optimal solution. However, in practice, and exhaustive search is often computationally not
+			 	feasible, whereas greedy algorithms allow for a less complex,
+			 	computationally more efficitent solution
+			 	
+			 	The idea behind SBS algo:
+			 		-sequentially remove features form the full feature subset 
+			 		until the new feature subspace constains the desired number of features.
+			 		-We use a criterion function, J, that we ant to minimize
+			 		
+			 	
+			 	Outline SBS in four steps:
+			 		1. Initialize the algorithm with k=d, where d is the dimensionality of the full feature space, Xd
+			 		2. Determine the feature, x^-, that maximizes the criterion: x^- = argmaxJ(Xk -x)
+			 			where x is an element of Xk
+			 		3. Remove the feature, x^-, from the feature setL X,k-1	- X,k - x^-; k=k-1
+			 		4. Terminate if k equals the number of desired features; otherwise, go to step 2.
+			 	
+			 	A resource on sequential feature algorithms
+			 		: Comparative Study of Techniques for Large-Scale Feature Selection, 
+			 			F.Ferri, P.Pudil, M.Hatef, and J.Kittler, pages 403-413, 1994
+			 			
+			 	
+			 	SBS algorithm has not been implemented in scikit-learn yet
+			 		see file SBS.py in this folder for the code.

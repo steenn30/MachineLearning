@@ -1,6 +1,5 @@
 '''
-Created on Sep 28, 2023
-
+Created on Oct 01, 2023
 @author: Nick
 '''
 
@@ -27,7 +26,7 @@ from sklearn.model_selection import train_test_split
         which we can use via the transform method to return a new data array with the selcted
         feature columns
         
-        Note that, instead of acaluclating the criterion explicityly inside the fit 
+        Note that, instead of calculating the criterion explicityly inside the fit 
         method, we simply removed the feature that is not contained in the best 
         performing feature subset
         
@@ -35,7 +34,7 @@ from sklearn.model_selection import train_test_split
         at each stage
         
         TIDBITS:
-            test dataset can also be valled validation dataset
+            test dataset can also be called validation dataset
 
 '''
 

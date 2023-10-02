@@ -1,3 +1,10 @@
+'''
+Created on Oct 01, 2023
+@author: Nick
+'''
+
+
+
 """ About
     -----------------------
     Linear model for binary classification

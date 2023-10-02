@@ -266,3 +266,18 @@
 			 	
 			 	SBS algorithm has not been implemented in scikit-learn yet
 			 		see file SBS.py in this folder for the code.
+			 		
+			
+			
+			
+			
+			Feature Seelction algorithms in scikit-learn
+			--------------------------------------------------------
+			book:
+				http://scikit-learn.org/stable/modules/feature_selection.html
+				
+				
+			You can find several different flavors of sequential feature 
+			selection related to the simple SBNS we implemented previously 
+			in the Python package mlxtend
+				= http://rasbt.github.io/mlxtend/user_guide/feature_selection/SequentialFeatureSelector

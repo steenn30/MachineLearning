@@ -1,3 +1,8 @@
+'''
+Created on Oct 01, 2023
+@author: Nick
+'''
+	
 	Other optimization algorithms
 		1. newton-cg
 		2. lbfgs (limited-memory- Broyden-Fletcher-Goldfarb-Shanno (BFGS)

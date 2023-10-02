@@ -1,3 +1,9 @@
+'''
+Created on Oct 01, 2023
+@author: Nick
+'''
+		
+		
 		scikit-learn was created to use NumPy arrays only
 			- it can sometimes be more convenient to preprocess data using pandas' DataFrame
 			- NumPy is just more mature in scikit-learn

@@ -32,22 +32,22 @@ About
 			data and projects the data onto a new subspace with equal or fewer 
 			dimensions
 			
-		
-		Summary of steps involved in PCA:
-			1. Standardize the d-dimensional dataset
-			2. Construct the covariance matrix
-			3. Decompose the covariance matrix into its eigenvectors and eigenvalues
-			4. Sort the eigenvalues by decreasing order ot rank the corresponding eigenvectors.
-			5. Select k eigenvectors, which correspond to the k largest eigenvalues,
-				where k is the dimensionality of the new feature subspace (k <= d)
-			6. Construct a projection matrix, W, from the "top" k eigenvectors.
-			7. Transform the d-dimensional input dataset, X, using the projection
-				matrix, W, to obtain the new k-dimensional feature subspace.
-			
-			NOTES
-				- Need to standardize features prior to PCA if the features were measured on
-				  different scales and we want to assign equal importance to all features
-				  
+	-----------------------------------------------------------------------------------------------------------------
+	|	Summary of steps involved in PCA:																			|
+	|		1. Standardize the d-dimensional dataset																|
+	|		2. Construct the covariance matrix																		|
+	|		3. Decompose the covariance matrix into its eigenvectors and eigenvalues								|
+	|		4. Sort the eigenvalues by decreasing order ot rank the corresponding eigenvectors.						|
+	|		5. Select k eigenvectors, which correspond to the k largest eigenvalues,								|
+	|			where k is the dimensionality of the new feature subspace (k <= d)									|
+	|		6. Construct a projection matrix, W, from the "top" k eigenvectors.										|
+	|		7. Transform the d-dimensional input dataset, X, using the projection									|
+	|			matrix, W, to obtain the new k-dimensional feature subspace.										|
+	|																												|
+	|		NOTES																									|
+	|			- Need to standardize features prior to PCA if the features were measured on						|
+	|			  different scales and we want to assign equal importance to all features							|
+	-----------------------------------------------------------------------------------------------------------------			  
 		
 		
 			Extracting the principal components step-by-step
@@ -137,33 +137,33 @@ About
 						 	- pg 151 to calculate the cumulative sum of explained variances (cumsum)
 					
 					
-					Feature transformation
-					------------------------------------------
-						- Last 3 steps to transform the Wine dataset onto the new principal component
-						  axes
-						  		5. Select k egienvectors, which correspond to the k largest eigenvalues,
-						  		   where k is the dimensionality of the new feature subspace (k <= d)
-						  		6. Construct a projection matrix, W, from the "top" k eigenvectors.
-						  		7. Transform the d-dimensional input dataset, X, using the project 
-						  		   matrix, W, to obstain the new k-dimensional feature subspace
-						  		   
-						- Less technical:
-								- We will sort the eigenpairs by descending order of the
-								  eigenvalues, construct a projection matrix from the selected
-								  eigenvectors, and use the projection matrix to trainsofrm
-								  the data onto the lower-dimensional subsapce
-								  
-						Mirrored projections
-						-----------------------------------------
-							- Depending on which versions of NumPy and LAPACK you are using, you
-							  may obtain the matrix, W, with its signs flipped.
-							    - This is not an issue
-							    
-					
-					Principal component analysis in scikit-learn
-					--------------------------------------------------------
-					 	- We will now discuss how to use the PCA class implemented in scikit-learn
-					 	- P
+			Feature transformation
+			------------------------------------------
+				- Last 3 steps to transform the Wine dataset onto the new principal component
+				  axes
+				  		5. Select k egienvectors, which correspond to the k largest eigenvalues,
+				  		   where k is the dimensionality of the new feature subspace (k <= d)
+				  		6. Construct a projection matrix, W, from the "top" k eigenvectors.
+				  		7. Transform the d-dimensional input dataset, X, using the project 
+				  		   matrix, W, to obstain the new k-dimensional feature subspace
+				  		   
+				- Less technical:
+						- We will sort the eigenpairs by descending order of the
+						  eigenvalues, construct a projection matrix from the selected
+						  eigenvectors, and use the projection matrix to trainsofrm
+						  the data onto the lower-dimensional subsapce
+						  
+				Mirrored projections
+				-----------------------------------------
+					- Depending on which versions of NumPy and LAPACK you are using, you
+					  may obtain the matrix, W, with its signs flipped.
+					    - This is not an issue
+					    
+			
+			Principal component analysis in scikit-learn
+			--------------------------------------------------------
+			 	- We will now discuss how to use the PCA class implemented in scikit-learn
+			 	- P
 						   
 					   
 					   	 

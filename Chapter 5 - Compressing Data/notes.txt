@@ -1,0 +1,175 @@
+About
+----------------------
+
+	In this chpater, we will cover the following topics:
+		1. Principal component analysis (PCA) for unsupervised data compression
+		2. Linear Discriminant analysis (LDA) as a supervised dimensionality reduction 
+			technique for maximizing class seperability
+		3. Nonlinear dimensionality reduction via kernel principal component analysis (KPCA)
+		
+	
+	1. Unsupervised dimensionality reduction via principal component analysis
+	---------------------------------------------------------------------------
+		- We maintain original features in feature selection such as sequential backward 
+		  selection
+		- We use feature extraction to transform or project the data onto a new
+		  a new feature space
+		  
+		This reduces computational complexity, storage space, and 
+		improves predictive performance by reducing the curse of 
+		dimensionality
+		
+		
+		PCA includes work in exploratory data analyses and the denoising of signals
+		in stock market trading, and the analysis of genome data and gene expression 
+		levels in the field of bioinformatics
+		
+		PCA helps us to identify patterns in data based on the correlation between
+		features
+		
+		In a nutshell:
+			PCA aims to find the directions of maximum variance in high-dimensional 
+			data and projects the data onto a new subspace with equal or fewer 
+			dimensions
+			
+		
+		Summary of steps involved in PCA:
+			1. Standardize the d-dimensional dataset
+			2. Construct the covariance matrix
+			3. Decompose the covariance matrix into its eigenvectors and eigenvalues
+			4. Sort the eigenvalues by decreasing order ot rank the corresponding eigenvectors.
+			5. Select k eigenvectors, which correspond to the k largest eigenvalues,
+				where k is the dimensionality of the new feature subspace (k <= d)
+			6. Construct a projection matrix, W, from the "top" k eigenvectors.
+			7. Transform the d-dimensional input dataset, X, using the projection
+				matrix, W, to obtain the new k-dimensional feature subspace.
+			
+			NOTES
+				- Need to standardize features prior to PCA if the features were measured on
+				  different scales and we want to assign equal importance to all features
+				  
+		
+		
+			Extracting the principal components step-by-step
+			------------------------------------------------------------
+			First four steps of PCA:
+				1. Standardizing the data.
+				2. Constructing the covariance matrix.
+				3. Obtaining the eigenvalues and eigenvectors of the covariance matrix.
+				4. Sorting the eigenvalues by decreasing order to rank the eigenvectors.
+				
+				
+					Step one (mandatory preprocessing)
+					--------------------------------------------------------------------
+						>>> from sklearn.model_selection import train_test_split
+						>>> X, y = df_wine.iloc[:, 1:] values, df_wine.iloc[:,0].values
+						>>> X_train, X_test, y_train, y_test = \
+						...		train_test_split(X, y, test_size = 0.3,
+						...								stratify = y
+						...								random_state = 0)
+						>>> #standardize the features
+						>>> from sklearn.preprocessing import StandardScaler
+						>>> sc = StandardScaler()
+						>>> X_train_std = sc.fit_transform(X_train)
+						>>> X_test_std = sc.transform(X_test)
+					
+					
+					
+					Step two (constructing the covariance matrix).
+					------------------------------------------------------------------
+						- See pg 149 for the equations
+						- Sample means are zero if we standardize the dataset.
+					
+					Covariance
+					----------------------------------------------------------
+						- A positive covariance between two features indicates 
+						  that the features increase or decrease together,
+						- A negative covariance indicates that the features
+						  vary in opposite directions
+						  
+						  The eigenvectors of the covariance matrix represent the principal components (the
+						  directions of maximum variance),
+						   
+						  where as the corresponding eigenvalues will define
+						  their magnitude. 
+						 
+						 Example: Wine database
+						 	- We would obtain 13 eigenvectors and eigenvalues from the 13 x 13-dimensional 
+						 	  covariance matrix
+					 	  
+					
+					 Step three
+					 --------------------------------------
+						 - Lambda is the scalar : the eignevalue
+						 - Use linalg.eig function from NumPy
+						 		CODE
+						 		----------------------------
+						 		>>> import numpy as np
+						 		>>> cov_mat = np.cov(X_train_std.T)
+						 		>>> eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
+						 		>>> print('\nEigenvalues \n%s' % eigen_vals)
+						 
+						 - We used numpy.cov to compute covariance matrix of the standardize training dataset
+						 - Using the linalg.eig function, we perfomed the eigendecomposition,
+						   which yeilded a vector (eigen_vals) consisiting of 13 egienvalues and the corresponding
+						   eigenvectors stored as columns in a 13 x 13-dimensional matrix (eigen_vecs)
+						   
+						 Eigendecomposition in NumPy
+						 -------------------------------------------------
+						 	- The numpy.linalg.eig funciton was designed to operate on
+						 	  both symmetric and non-symmetric square matrices.
+						 	  	- You may find that it returnes complex eigenvalues in certain
+						 	  	  cases
+						 	- numpy.linalg.eigh has been implemented to decompose Hermetian matrices,
+						 	  which is a numerically more stable approcah to working with symmetric
+						 	  matrices such as the covariance matrix;
+						 	  	numpy.linalg.eigh always returns real eigenvalues
+						 
+						 Total and explained variance
+						 --------------------------------------------------
+						 	- To reduce dimensionality, we only select the subset of the eigenvectors 
+						 		(principal components) that contain most of the information (variance)
+						 	- Egienvalues define the magnitude of the eigenvectors,
+						 	- The 'explained variance ratio' is simply the fraction of an eigenvalue,
+						 	  and the total sum of the eigen values
+						 	  			- lambda(j) / sum(from j=1, to d)[lambda(j)]
+						 	  			
+						 	- pg 151 to calculate the cumulative sum of explained variances (cumsum)
+					
+					
+					Feature transformation
+					------------------------------------------
+						- Last 3 steps to transform the Wine dataset onto the new principal component
+						  axes
+						  		5. Select k egienvectors, which correspond to the k largest eigenvalues,
+						  		   where k is the dimensionality of the new feature subspace (k <= d)
+						  		6. Construct a projection matrix, W, from the "top" k eigenvectors.
+						  		7. Transform the d-dimensional input dataset, X, using the project 
+						  		   matrix, W, to obstain the new k-dimensional feature subspace
+						  		   
+						- Less technical:
+								- We will sort the eigenpairs by descending order of the
+								  eigenvalues, construct a projection matrix from the selected
+								  eigenvectors, and use the projection matrix to trainsofrm
+								  the data onto the lower-dimensional subsapce
+								  
+						Mirrored projections
+						-----------------------------------------
+							- Depending on which versions of NumPy and LAPACK you are using, you
+							  may obtain the matrix, W, with its signs flipped.
+							    - This is not an issue
+							    
+					
+					Principal component analysis in scikit-learn
+					--------------------------------------------------------
+					 	- We will now discuss how to use the PCA class implemented in scikit-learn
+					 	- P
+						   
+					   
+					   	 
+						  
+						  
+						  
+						  
+				
+						  

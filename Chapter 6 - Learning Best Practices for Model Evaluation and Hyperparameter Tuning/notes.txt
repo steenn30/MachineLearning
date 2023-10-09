@@ -1,0 +1,77 @@
+About
+-------------------------
+	Earlier - leanred about the essential machine lelarning algorithms for classification
+			  and how to get our data into shape before we feed it into those algorithm.
+			  
+	Now 	- Time to learn about the best pracitces of building good machine learning
+			  models by fine-tuning the algorithms and evaluating the
+			  performance of the models.
+			  
+			  
+	In this chapter, we will learn how to do the following
+			* Assess the performance of machine learning models
+			* Diagnose the common problems of machine learning algorithms
+			* Fine-tune machine learning models
+			* Evaluate predictive models using different performance metrics
+			
+	
+	
+	
+	Streamlining workflows with pipelines
+	-----------------------------------------------------------------
+	
+	Loading the Breast Cancer Wisconsin dataset
+	-------------------------------------------------------------------
+	
+	Combining transformers and estimators in a pipeline
+	-------------------------------------------------------------------
+	
+	Using k-fold cross-validation to assess model performance
+	-------------------------------------------------------------------
+	
+	The holdout method
+	-------------------------------------------------------------------
+	
+	K-fold cross-validation
+	-------------------------------------------------------------------
+	
+	Debugging algorithms with learning and validation curves
+	-------------------------------------------------------------------
+	
+	Diagnosing bias and variance problems
+	-------------------------------------------------------------------
+	
+	Addressing over- and underfitting with validation curves
+	-------------------------------------------------------------------
+	
+	Fine-tuning machine learning models via grid search
+	-------------------------------------------------------------------
+	
+	
+	Tuning hyperparameters via grid search
+	-------------------------------------------------------------------
+	
+	
+	Algorithm selection with nested cross-validation
+	-------------------------------------------------------------------
+	
+	Looking at different performance evaluation metrics
+	-------------------------------------------------------------------
+	
+	Reading a confusion matrix
+	-------------------------------------------------------------------
+	
+	Optimizing the precision and recall of a classification model
+	-------------------------------------------------------------------
+	
+	Plotting a receiver operating characteristic
+	-------------------------------------------------------------------
+	
+	Scoring metrics for multiclass classification
+	-------------------------------------------------------------------
+	
+	Dealing with class imbalance
+	-------------------------------------------------------------------
+	
+	Summary
+	-------------------------------------------------------------------

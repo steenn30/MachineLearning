@@ -1,0 +1,65 @@
+About
+
+	Supervised data compression via linear discriminant analysis
+	---------------------------------------------------------------------------
+	 	-LDA can be used as a technique for feature extractioonn to increase the computational
+	 	efficiency and reduce thje degree of overfitting due to the curse of dimensionality in
+	 	non-regularized models.
+	 	
+	 	- 	The general concept behind LDA is very similar to PCA,
+	 		but whereas PCA attempts to find the orthoganal component axes of maximum
+	 		variance in a dataset, the goal in LDA is to find the feature subspace that optimizes
+	 		class separability
+	 		
+	 		
+	 PCA(principal component analysis) vs. LDA(linear discrimnant analysis)
+	 -----------------------------------------------------
+	 - Both linear transformation techniques to reduce the number of dimensions in a dataset
+	 - PCA is unsupervised
+	 - LDA is supervised
+	 
+			 RESOURCE
+			 	- PCA Versus LDA, A.M. Martinez and A.c. Kak, IEEE transactions
+			 		on Pattern Analysis and Machine Intelligence, 23(2): 228-233, 2001
+	 		
+			 Fisher LDA
+			 ----------------------------------------
+			 LDA is sometimes called Fisher's LDA.
+			 - LDA initially created for two-class classification problems in 1936
+	
+	 - One assumption in LDA is taht the data is normallyh distributed. 
+	 - 	Also, we assume that the classes have identical covariance matrices and that the training
+	 	examples are statistically independent of each other.
+	 			- Even if one, or more, of those assumtpions is (slightlyt) violated,
+	 			  LDA for dimensionality reduction can still work
+	 		
+	 		
+	 			  		-RESOURCE
+	 			  			- Pattern Classification 2nd Edition, R.O. Duda, P.E. Hart, and D.G.
+	 			  				Stork, New York, 2001
+	 			  		
+	 	Steps for LDA:
+	 	---------------------------------------------------------
+		1. Standardize the d-dimensional dataset (d is the number of features)
+		2. For each class, compute the d-dimensional mean vector
+		3. Construct the between-class scatter matrix, S(b), and the
+		   within-class scatter matrix, S(w)
+		4. Compute the eigenvectors and corresponding eigenvalues of the matrix
+			S(w)^-1 * S(b)
+		5. Sort the eigenvalues by decreasing order to rank the corresponding 
+		   eigenvectors.
+		6. Choose the k eigenvectors that correspond to the k largest eigenvalues to
+		   construct a d x k-dimensional transformation matrix, W, the eigenvectors are
+		   the columns of this matrix
+		7. Project the examples onto the new feature subspace using the transformation
+		   matrix, W
+		-
+		
+		
+				- As we can see, LDA is quite similar to PCA in the sense that we are decomposing matrices
+				  into eigenvalues and eigenvectors, which will form the new lower-dimensional feature space. 
+				  However as mentioned before, LDA takes class label information into account, which is
+				  represented in the form of the mean vectors computed in step 2.
+	 
+	 
+	 

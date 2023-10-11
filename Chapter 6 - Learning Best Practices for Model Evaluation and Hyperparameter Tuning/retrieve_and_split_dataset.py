@@ -3,11 +3,14 @@ Created on Oct 10, 2023
 
 @author: Nick
 '''
+from Tools.scripts.stable_abi import IFDEF_DOC_NOTES
 
 '''
 About
 ------------------
     Retrieve a dataset for breast cancer
+    
+    When we execute 
     
     
 '''
@@ -62,3 +65,25 @@ X_train, X_test, y_train, y_test = \
                      test_size = 0.20,
                      stratify=y,
                      random_state=1)
+    
+    
+    
+    
+'''
+Notes
+---------------------------------------------
+    - The make_pipeline function takes an arbitrary number of scikit-learn transformers,
+      followed by a scikit-learn eastimator that implements the fit and predict methods
+        - These transformers are objects that support teh fit and transform methods as input
+        
+    - The pipeline can be thought of as a meta-estimator or wrapper around those 
+      individual transformers and estimators
+          - When calling fit method of Pipeline, the data will be passed down a series 
+            of transformers via fit and transform calls on these intermediate steps
+            until it arrives at the estimator object
+                - Estimator object is the final element in a pipeline.
+          - The estimator will then be fitted to a transformed training data
+'''
+
+
+

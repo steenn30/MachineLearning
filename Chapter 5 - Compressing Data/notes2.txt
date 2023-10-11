@@ -1,4 +1,5 @@
 About
+----------------------------------------------------------
 
 	Supervised data compression via linear discriminant analysis
 	---------------------------------------------------------------------------
@@ -60,6 +61,36 @@ About
 				  into eigenvalues and eigenvectors, which will form the new lower-dimensional feature space. 
 				  However as mentioned before, LDA takes class label information into account, which is
 				  represented in the form of the mean vectors computed in step 2.
+				  
+	
+		Computing the scatter matrices
+		-------------------------------------------
+			- We standardized in PCA, so we can skip the first step.
+				- Start with calculation of the mean vectors, which we will use 
+				  to construct the within-class scatter matrix and between-class
+				  scatter matrix and between-class scatter matrix, respectively.
+				- Each mean vector, m(i)m stores the mean feature value mu(m),
+				  with respect to the example of class i:
+				  
+				  m(i) = (1/n(i))summation((from x is an element of Di)[ x(m)])
+				  
+				  
+				  CODE
+				  -------------------------
+				  >>> np.set_printoptions(precision = 4)
+				  >>> mean_vecs = []
+				  >>> for label in range(1,4) :
+				  ...		mean_vecs.append(np.mean(
+				  ...							X_train_std[y_train==label], axis = 0))
+				  ...  print('MV %s: %s\n' %(label, mean_vecs[label-1]))
 	 
+	 
+	 
+	 	Read more on LDA at page 161
+	 	
+	 	*TODO: Continue notes on KPCA *
+	 	
+	 	
+	 	
 	 
 	 

@@ -1,9 +1,9 @@
 About
 -------------------------
-	Earlier - leanred about the essential machine lelarning algorithms for classification
+	Earlier - learned about the essential machine learning algorithms for classification
 			  and how to get our data into shape before we feed it into those algorithm.
 			  
-	Now 	- Time to learn about the best pracitces of building good machine learning
+	Now 	- Time to learn about the best practices of building good machine learning
 			  models by fine-tuning the algorithms and evaluating the
 			  performance of the models.
 			  
@@ -20,11 +20,48 @@ About
 	Streamlining workflows with pipelines
 	-----------------------------------------------------------------
 	
+		- When we applied different preprocessing techniques, we have to reuse
+			the parameters that were obtained during the fitting of the training 
+			data to scale and compress any new data, such as the exmaples in the
+			separate test dataset.
+			
+		- A handy tool is the Pipeline class in scikit-learn
+				- Pipeline class allows us to fit a model including an arbitrary
+					number of transformation steps and apply it to make predictions
+					about new data.
+	
 	Loading the Breast Cancer Wisconsin dataset
 	-------------------------------------------------------------------
+		- Dataset can be found at:
+			- https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
+		- Info on the dataset can be found at:
+			- https://archive.ics.uci.edu/m1/datasets/Breast+Cancer+Wisconsin+(Diagnostic).
 	
 	Combining transformers and estimators in a pipeline
 	-------------------------------------------------------------------
+		- 	According to the previous chapter: many learning algorithms require
+			input features on the same scale for optimal performance.
+		- 	We need to standardize the features ( since they are measured on various scales)
+			before we feed them to a linear classifier, such as logistic regression.
+			
+				CODE
+				----------------------
+				 ABOUT: chaining StandardScaler, PCA, and LogisticRegression objects in a pipeline
+				---------------------------------------------------------------------------------------
+					from sklearn.preprocessing import Standard Scaler								   
+					from sklearn.decomposition import PCA
+					from sklearn.linear_model import LogisticRegression
+					from sklearn.pipeline import make_pipeline
+					pipe_lr = make_pipeline(StandardScaler(),
+												PCA(n_components=2),
+												LogisticRegression(random_state = 1,
+																	solver = 'lbfgs')
+					
+					pipe_lr.fit(X_train, y_train)
+					y_pred = pipe_lr.predict(X_test)
+					print('Test Accuracy: %.3f' % pipe_lr.score(X_test, y_test))
+				--------------------------------------------------------------------------------
+			
 	
 	Using k-fold cross-validation to assess model performance
 	-------------------------------------------------------------------

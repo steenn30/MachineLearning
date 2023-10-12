@@ -81,15 +81,184 @@ About
 			 - Refer to the figure on pg 195
 	Using k-fold cross-validation to assess model performance
 	-------------------------------------------------------------------
-	
+		- One of the key steps in building a machine learning model is to estimate
+		  its performance on data that the model hasn't seen before.
+		- A model can suffer from:
+				- underfitting (high bias) 	  : if the model is too simple
+				- overfitting (high variance) : if the model is too complex for the underlying
+											  	training data
+				We have to techniques to tackle these problems:
+						1. holdout cross-validation
+						2. k-fold cross-validation
+				These can help us to obtain reliable estimates of the model's generalization performance
+						- or rather, how well the model performs on unseen data
 	The holdout method
 	-------------------------------------------------------------------
-	
+			- Using the holdout method
+				- We split our initial dataset into seperate training and test datasets
+						- former used for model training
+						- latter is used to estimate its generalization peformance
+				- model selection - tuning and comparing different parameter settings to further improve
+									the performance for making predictions on unseen data
+								 - the name refers to a given classification problem for which we want to select
+								   the optimal values of tuning parameters (also called hyperpraremeters)
+				- If we reuse test data enough it will become trianing data.
+				- Using the test dataset for model selection is not a good machine learning practice
+				
+			- A better way of using the holdout method for model selection is to 
+			  separate the data into three parts:
+			  		1. training dataset 
+			  		2. validation dataset
+			  		3. test dataset
+				- Training dataset is used to fit the different models, and the performance on the 
+				  validation dataset is then used for the model selection
+				- Using a test dataset the model hasn't seen before during training and model 
+				  selection is that we can obtian a less biased estimate of its ability to generalize
+				  to new data
+				- pg 196 diagram
+						- shows the concept of holdout cross-validation, where we use a validation dataset to
+						  repeatedly evaluate the performance of the model after training using different
+						  hyperparaemeter values
+						- Once we are staisfied with the utuning of hyperparameter values,
+						  we estimate the model's generalization performance on the test
+						  dataset
+		  - Disadvantages
+		  		- may be very sensistive to how we partitiion the trianing dataset into the training
+		  		  and validation subsets; the estimate will vary for different examples of the data
+		  		  
+		  		  
+		  		  
 	K-fold cross-validation
 	-------------------------------------------------------------------
+		- In k-gold cross-validation, we randomly split the training dataset into k folds without
+		  replacement.
+		  		- k-1 folds are used for the model training
+		  		- one fold is used for performance evaluation
+	  	- This procedure is repeated k times so that we obtain k models
+	  	   and performance estimates
+	  	   
+		- We then cal.culate the average performance of the models based on the different, independent test folds
+		 		- This allows us to obtain a performance estimate that is less sensitive
+		 		  to the sub-partitioning of the training data compared to the holdout 
+		 		  method
+		 - We use k-fold cross-validation for model tuning
+		 		- Model tuning is finding the optimal hyperparameter values that yield a satisfying
+		 		  generalization performance, which is estimated from evaluating the model performance 
+		 		  on the test folds.
+		 - We can retrain the model on the complete training dataset to obtain a final performance estimate
+		   by using the independent test dataset once we have found satisfactory hyperparameter values.
+		   		- providing more training examples to a learning algorithm usually results in a more
+		   		  accurate and robust model.
+		  - k-fold is a resampling technique without replacement
+		  		- By only using each example once in training and validation, we get a lower-variance estimate
+		  		  of the model performance than the holdout method
+		  - A good standard value for k in k-fold cross-validation is 10.
+		  
+		  RESOURCE:
+		  ----------------------------------------------------------------------------------------------------------
+		  		- 	A study of Cross-validation and BNootstrap for accuracy estimation and model Selection, 
+		  		  	Kohavi Ron, International Joint Conference on Artifical Intelligence (IJCAI),
+		  		  	14 (12): 1137-43, 1995
+		  ------------------------------------------------------------------------------------------------------------
+		  - If we are working with relatively small trianing sets, it can be useful to
+		    increase the number of folds.
+		    	- If we increase k, more trianing data will be used in each iteration
+		    			- This results in a lower pessimistic bias toward estimating the 
+		    			  generalization performance by averaging the individual model estimates
+		    			- In contrast, large values of k will also increase the runtime of the cross-validation
+		    			  algorithm and yield estimates with higher variance
+		    			  		- This is because the training folds will be more similar
+		    			  		  to each other
+			  		  	- Larger datasets will allow for a smaller value for k, which reduces computational costs
+			  		  	
+		Leave-one-out-cross-validation
+		--------------------------------------------------------------------------------------------------
+			- A special case of k-fold cross-validation is the leave-one-out cross-validation (LOOCV) method.
+			- In LOOCV, we set the number of folds equal to the the number of training examples
+					- (k=n)
+			- This makes it so that only one training example is used for testing during each iteration, 
+			  which is recommended approach for working with very small datasets
+		--------------------------------------------------------------------------------------------------
+	
+				  
+			- A slight improvement over the standard k-fold cross-validation approach is stratified
+			  k-fold cross-validation
+			  		- This can yield better bias and variance estimates
+			  				- especially in cases of unqual class proportions
+			 - In stratified cross-validation, the calss label proportions are preserved in each fold to 
+			   ensure that each fold is representative of the class proprotions in the training dataset
+			   
+			 CODE
+			 ------------------------------------------------------------
+			 import numpy as np
+			 from sklearn.model_selection import STratifiedKFold
+			 
+			 kfold = StratifiedKFold(n_splits=10).split (X_train, y_train)
+			 scores = []
+			 for k, (train,test) in enumerate(kfold):
+			 	pipe_lr.fit(X_train[train], y_train[train])
+			 	score = pipe_lr.score(X_train[test], y_train[test])
+			 	scores.append(score)
+			 	print('Fold: %2d, Class dist.: %s, Acc: %.3f' % (k + 1,
+			 		np.bincount(y_train[train]), score))
+			 	print('\nCV accuracy: %.3f +/- %.3f' &
+			 		(np.mean(scores), np.std(scores)))
+			 ------------------------------------------------------------------------
+			 	- First we intialized the StratifiedKFold iterator form the 
+			 	  sklearn.model_selection module with the y_train class labels in the training dataset,\
+			 	  and we specified the number of folds via the n_splits parameter
+			 	- When we used the kfold iterator to loop through the kfolds, we used the returned indicies
+			 	  in train to fit the logistic regression pipeline that we set up at the start of this
+			 	  chapter
+			 	- Using the pipe_lr pipeline, we ensured that the examples were scaled properly (for instance,
+			 	  standardize) in each iteration. 
+			 	- We then used the test indices to calculate the accuracy score of the model
+			 			- Which we collected in the scores list to calculate the average accuracy
+			 			  and standard deviation of the estimate
+			 			  
+			 CODE
+			 -----------------------------------------------------------------
+			 '''
+			 	scikit-learn also implements a k-fold cross-validation scorer
+			 		- this allows us to evaluate our model using
+			 		  stratified k-fold cross-validation less
+			 		  verbosely
+			 	-An extremely useful feature of the cross_val_score appraoch is that we can distribute the 
+			 	 evaluation of the different folds across multiple CPUs.
+			 	- If we set the n_jobs paraemeter to 1, only one CPU will be used to evaluate performances
+			 			- setting n_jobs=2, we could distribute the 10 rounds of cross-validation
+			 			  to two CPUs
+			 			- setting n_jobs = -1 allows us to use all available CPUs
+			 	
+			 '''
+			 from sklearn.model_selection import cross_val_score
+			 scores = cross_val_score(estimator=pipe_lr,
+			 						  X = X_train,
+			 						  y=y_train,
+			 						  cv=10,
+			 						  n_jobs = 1)
+			 print('CV accuracy scores: %s' % scores
+			 print('CV accuracy: %.3f +/- %.3f' %(np.mean(scores),
+			 		np.std(scores)))
+			 
+			 Estimating generalization performance
+			 -------------------------------------------------------------
+			 	Resource about model evaluation and cross-validation
+			 		- Model evaluation, model selection, and algorithm selecting in machine learning.
+			 			Raschka S. arXiv preprint arXiv: 1811.12808, 2018
+			 				- https://arxiv.org/abs/1811.12808
+			 		- Analysis of Variance of Cross-validation Estimators of the Generalization Error, M. Markatou,
+			 			H. Tian, S.Biswas, and G.M. Hripcsak, Journal of Machine Learning Research,
+			 				6: 1127-1168, 2005
+			 		
+			 
 	
 	Debugging algorithms with learning and validation curves
 	-------------------------------------------------------------------
+		- Taking a look at two diagnostic tools to improve performance:
+				1. Learning Curves - diagnose whether a learning algorithm has a problem with 
+									 overfitting (high variance) or underfitting (high bias)
+				2. Validation curves - Helps us address common problems
 	
 	Diagnosing bias and variance problems
 	-------------------------------------------------------------------

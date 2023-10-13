@@ -262,6 +262,10 @@ About
 	
 	Diagnosing bias and variance problems
 	-------------------------------------------------------------------
+		- The model tends to overfit the training data and does not generalize well to unseen data 
+		  if a model is too complex for a given dataset 
+		  	-I.E there are too many degress of freedom or parameters in this model
+		  	- It can help to collect more training examples to reduce the degree of overfitting
 	
 	Addressing over- and underfitting with validation curves
 	-------------------------------------------------------------------

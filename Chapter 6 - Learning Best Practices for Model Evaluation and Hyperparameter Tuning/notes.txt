@@ -266,20 +266,153 @@ About
 		  if a model is too complex for a given dataset 
 		  	-I.E there are too many degress of freedom or parameters in this model
 		  	- It can help to collect more training examples to reduce the degree of overfitting
+		
+		- By plotting the modcel training and validation accuracies as funciton of the training 
+		  dataset size, we can easily detect whether the model sufferes from high variance
+		  or high bias, and whether the collection of more data could help to address this
+		  problem.
+		  
+		- pg 202 graph for two common model issues
+				- upper-left shows a model with high bias. This modcel has both low trianing
+				  and cross-validation accuracy, which indicates that it underfits the training
+				  data
+						- Common ways to address this issue are to increase the number of parameters 
+						  of the model, for example, by collecting or constructing additional features,
+						  or by decreasing the degree of regularization
+						  	- for example: support vector machine (SVM) or logistic
+						  					regression classifiers
+				- Thbe graph in the upper-right suffers form high variance
+					- This is indicated by the large gap between the trianing and cross-validation accuracy.
+					- To address this problem of overfitting, we can collect more training data,
+					  reduce the complexity of the model, or increase the regularization parameter
+		- Decrease overfitting in unregularized models by feature extraction and feature selection.
+		- Collecting more training data usually tends to decrease the chance of overfitting
+				- Won't help if data is extremely noisy or the model is already very
+				  close to optimal
+		- To evaluate the model using a learning curve function,
+			- See LearningCurve.py in Chapter 6 folder.
 	
 	Addressing over- and underfitting with validation curves
 	-------------------------------------------------------------------
+		- Validation curves are a useful tool for improving the performance of a model
+		  by addressing issues such as overfitting or underfitting
+		  
+		- Instead of plotting the training and test accuracies as functions of the sample size,
+		  we vary the values of the model parameters, for example, the inverse regularization parameter,
+		  C, in logistic regression
 	
 	Fine-tuning machine learning models via grid search
 	-------------------------------------------------------------------
 	
+		- 2 types of parameters:
+			1. Those that are learned from the training data
+					- the weights in logistic regression
+			2. Parameters of a learning algorithm that are optimized separately
+			
+		- The latter are the tuning parameters (or hyperparameters) of a model, for example, the
+		  regularization parameter in logistic regression or the depth parameter of a decision tree
+		  
+		- In this section, we will take a look at a popular hyperparameter optimization technique 
+		  called grid search
+		 	- Grdi search can further help to improve the performance of a model
+		      by finidng  the optimal combination of hyperparameter values
+	
 	
 	Tuning hyperparameters via grid search
 	-------------------------------------------------------------------
-	
-	
+		- Grid search approach is quite simple
+			- It's a brute-force exhaustive search paradigm where we specify a list of values for 
+			  different hyperparameters, and the computer evaluates the model performance for each 
+			  combination to obtain the optimal combination of values from this set:
+			  
+			  
+				CODE
+				--------------------------------------------
+				from sklearn.model_selection import GridSearchCV
+				from sklearn.svm import SVC
+				
+				pipe_svc = make_pipeline(StandardScaler(), SVC(random_state=1))
+				param_range = [0.001, 0.001, 0.01, 0.1, 
+							   1.0, 10.0, 100.0, 1000.0]
+				
+				param_grid = [{'svc__C': param_range,
+								'svc__kernel':['linear']},
+							{'svc__C' : param_range,
+							 'svc__gamma': param_range,
+							 'svc__kernel': ['rbf']}]
+							 
+				gs = GridSearchCV(estimator = pipe_svc,
+								  param_grid = param_grid,
+								  scoring='accuracy',
+								  cv=10,
+								  refit= True,
+								  n_jobs =-1)
+				gs = gs.fit(X_train, y_train)
+				print(gs.best_score_)
+				print(gs.best_params_)	
+		
+		- We intialized a GridSearchCV object from the sklearn.model_selection module to train and
+		  tune an SVM pipeline
+		- We set the param_grid parameter of GridSearchCV to a list of dictionaries to specify the
+		  parameters that we'd want to tune.
+		- For the linear SVM, we only evaluated the inverse regularization parameter, C; for the RBF kernel SVM
+		- We tuned both the svc__C and svc_gamma parameters
+			-svc__gamma parameter is specific to kernel SVMs
+			
+			
+		- After using the trianing data to perform the grid search, we obtianed the score
+		  of the best-performing model via the best_score_ attribute
+		- We can access the best_score_ attribute's value through the best_params_ attribute
+		-In this case, the RBF kernel SVM model with svc__C = 100.0 yileded thje best k-fold 
+		 cross-validation accuracy: 98.5
+		 
+		- Finally, we use the independent test dataset to estimate the performance of the best-selected model, 
+		  which is available via the best_estimator_ attribute of the GridSearchCV object:
+		  
+		  		clf = gs.best_estimator_
+		  		clf.fit(X_train, y_train)
+		  		print('Test accuracy: %.3f' % clf.score(X_test, y_test))
+		  		
+		 - fitting the model with the best settings (gs.best_estimator) on the trianing set
+		   manually via clf.fit(X_train, y_train) after compelteing the grid search is not necessary.
+		 - GridSearchCV has a refit parameter
+		 	- refit will refit the gs.besT_estimator_ to the whole training set automatically if we set
+		 	  refit=True (default
+		 	  
+		
+		NOTE: Randomized hyperparameter search
+		------------------------------------------------------
+			- An alternative approach for sampling different parameter cobinations using 
+			  scikit-learn is randomized search.
+			  	- Randomized serach usually performs about as well as grid search, but is much more 
+			  	  cost-and time- effective.
+						- For exmaple, if we sample 60 parameter combinations via randomized search, 
+						  we already have a 95 percenmt probability of obtaining solutions within 5 percent
+						  of the optimal performance
+						  	-SOURCE:
+						  		- Rnadom serach for hyper-parameter optimization, Bergstra K, Bengio
+						  			Y. Journal of MAchine Learning Research pp. 281 - 305, 2012
+				- Using RandommizedSearchCV, we can draw random parameter combinations from sampling
+				  distributions with a specified budget.
+				  		- http://scikit-learn.org/stable/modules/grid_search.html#randomized-parameter-optimization
+				  		
+				  		
+				  		
+				  		
 	Algorithm selection with nested cross-validation
 	-------------------------------------------------------------------
+	
+		- Combine grid search with k-fold cross-validation for fine-tuning the performance 
+		  of a  machine learning model\
+		- Nested cross-validation is good to select among different machine learning algorithms.
+		
+		- The true error of the estimate is almost unbiased releative to the test dataset when 
+			nested cross-validation is used
+			- SOURCE
+			-------------------------------------------------------------------
+				- Bias in Error Estimation When Using Cross-Validation for Model Selection, 
+					BMC Bioinformatics, S.Varma and R.Simon, 7(1): 91, 2006
+		  
 	
 	Looking at different performance evaluation metrics
 	-------------------------------------------------------------------

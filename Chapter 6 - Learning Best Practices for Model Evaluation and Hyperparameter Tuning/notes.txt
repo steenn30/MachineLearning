@@ -412,19 +412,195 @@ About
 			-------------------------------------------------------------------
 				- Bias in Error Estimation When Using Cross-Validation for Model Selection, 
 					BMC Bioinformatics, S.Varma and R.Simon, 7(1): 91, 2006
-		  
+					
+		- In nested cross-validation
+			- Outer k-fold cross-validation loop to split the data into training and test folds
+			- Inner loop is used to select the model using k-fold cross-validation on the training fold
+			
+			- After model selection
+				- Test fold is used to evaluate the model performance
+		
+		- 5x2 cross-validation: cross validation with only five outer and two inner folds
+								- useful for large datasets where computational 
+								  performance is important 
+		 
+		 CODE (for nested cross-validation)
+		 ----------------------------------
+		 	gs = GridSearchCV(estimator=pipe_svc,
+		 						param_grid = param_grid,
+		 						scoring = 'accuracy',
+		 						cv = 2)
+		 
+		 	scores = cross_val_score(gs, X_train, y_train,
+		 								scoring = 'accuracy',
+		 								cv = 5)
+		 	print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores),
+		 											np.std(scores))
+		 											
+		 ---------------------------------------------------------------
+		
+		 - The returned average cross-validation accuracy gives us a good estimate of what to expect
+		   if we tune the hyperparameters of a model and use it on unseen data.
+		   
+		 - We can use the nested cross-validation approach to compare an SVM model to a simple
+		   decision tree classifier; for simplicity, we only tune its depth parameter
+		   
+		 CODE
+		 -----------------------------------------------------
+		 from sklearn.tree import DecisionTreeClassifier
+		 
+		 gs = GridSearchCV(estimator = DecisionTreeClassifier(
+		 						random_state=0),
+		 						param_grid=[{'max_depth': [1, 2, 3,
+		 												   4 , 5, 6,
+		 												   7, None}],
+		 						scoring = 'accuracy',
+		 						cv = 2)
+		 scores = cross_val_score(gs, X_train, y_train,
+		 							scoring='accuracy', cv=5)
+		 
+		 print('CV accuracy: %.3f +/- %.3f'% (np.mean(scores),
+		 									   np.std(scores)))
+		 --------------------------------------------------------
+		 
+		 - We can see that the nested cross-validation performance of the SVM model
+		   is notably better than the performance of the decision tree
+		     	- This means we can expect that it might be the better choice to classify 
+		     	  new data that comes from the same population as this particular dataset
+		 
 	
 	Looking at different performance evaluation metrics
 	-------------------------------------------------------------------
 	
+	 - Previously, we evaluated the different machine learning models using prediciton accuracy
+	 		- There are other metrics s.a.:
+	 				1. precision
+	 				2. recall
+	 				3. F1 Score
+	
 	Reading a confusion matrix
 	-------------------------------------------------------------------
+		- Confusion matrix: lays out the performance of a leanrinmg algorithm
+			- Reports the counts of the:
+				1. True positive (TP)
+				2. True negative (TN)
+				3. False positive(FP)
+				4. False negative(FN)
+			...predictions of a classifier
+		
+		- We can predict these manually by comparing the true and predicted class labels
+			- scikit-learn provides a convenient confusion_matrix function that we can use
+			
+			CODE
+			---------------------------------------
+			from sklearn.metrics import confusion_matrix
+			
+			pipe_svc.fit(X_train, y_train)
+			y_pred = pipe_svc.predict(X_test)
+			confmat = confusion_matrix(y_true = y_test, y_pred=y_pred)
+			print(confmat)
+			-------------------------------------------------
+			
+			USING MATSHOW FUNCTION TO MAP INFORMATION ONTO THE CONFUSION MATRIX ILLUSTRATION
+			------------------------------------------------------------------------------------
+			fig,ax = plt.subplots(figsize(2.5,2.5))
+			ax.matshow(confmat, cmap=plt.cm.Blues, alpha=0.3)
+			for i in range(confmat.shape[0]):
+				for j in range(confmat.shape[1]):
+					ax.test(x=j, y=i,
+							s=confmat[i,j],
+							va = 'center', ha='center')
+			plt.xlabel('Predicted label')
+			plt.ylabel('True label')
+			plt.show()
 	
 	Optimizing the precision and recall of a classification model
 	-------------------------------------------------------------------
-	
+		- Both the prediction error(ERR) and accuracy(ACC) provide general information about how
+		  many examples are misclassified. 
+		  
+		- The error can be understood as the sum of all false predictions divided by the number of total prediction
+		- The accuracy is calculated as the sum of correct predictions divided by the number of total predictions
+		
+			-----------------------------------------------------
+			
+				ERR = (FP + FN) / (FP + FN + TP + TN)
+				
+				ACC = (TP + TN) / (FP + FN + TP + TN) = 1 - ERR
+		
+			-------------------------------------------------------
+			
+		- The true positive rate (TPR) and false positive rate (FPR) are performance metrics that are
+		  especially useful for imbalanced class problems
+		  
+		  	FPR = FP/N = FP/(FP + TN)
+		  	
+		  	TPR = TP/P = TP/(FN + TP)
+		  	
+		 - The performance metrics precision(PRE) and recall(REC) are related to those TP and TN rates, 
+		   and in fact, REC is synonymous with TPR:
+		   		
+		   		PRE = TP/(TP+FP)
+		   		REC = TPR = TP/P = TP/(FN + TP)
+		   		
+		   -Revisiting the malignant tumor detection exmpasle,
+		   		- optimizing for recall helps with minimizing the chance of not detecting a malignatn tumor
+		   			- However, this comes at the cost of predicting malignant tumors (a high number of FP)
+		   	   - optimizngt for precision, we emphasize correctness if we predict that a patient has a malignant tumor.
+		   	   		- However, this comes at the cost of missing malignant tumors (a high number of FN)
+		   	   		
+		   	- To balance the ip- and down-sides of optimizing PRE and REC, often a combination of 
+		   	  PRE and REC is used, the so-called F1 score:
+		   	  		F1 = 2 x ((PRE x REC) / (PRE + REC))
+		   	  		
+		   FURTHER READING
+		   ---------------------------------------------------
+		   		- Evaluation: From Precision Recall and F-Factor to ROC, Informedness, Markedness & Correlation (by David M. W. Powers)
+		   			- available at:
+		   					- http://flinders.edu.au/science_engineering/fms/School-CSEM/publications/tech_reps-research_artfcts/TRRA_2007
+		   ---------------------------------------------------------
+		   
+		   Import scoring metrics from sklearn.metrics module:
+	   
+	   		CODE
+	   		-------------------------------------
+	   		from sklearn.metrics import precision_score
+	   		from sklearn.metrics import recall_score, f1_score
+	   		
+	   		print('Precision: %.3f' % precision_score(
+	   					y_true= y_test, y_pred=y_pred))
+	   		
+	   		print('Recall: %.3f' % recall_score(
+	   					y_true = y_test, y_pred = y_pred))
+	   					
+	   		print('F1: %.3f' % f1_score(
+	   					y_true = y_test, y_pred=y_pred))
+	   		-------------------------------------------------------
+	   		
+	   	- Furthermore, we can use a different scoring metric than accuracy in the GridSearchCV via
+	   	  the scoring parameter.
+	   	  	- A complete list of the different values that are accepted by the scoring paramter can be
+	   	  	  found at http://scikit-learn.org/stable/modules/model_evaluation.html
 	Plotting a receiver operating characteristic
 	-------------------------------------------------------------------
+	
+		- Receiver operating characteristic (ROC) graphs are useful tools to select models for
+		  classification based on their performance with respect to the FPR and TPR, which are
+		  computed by shifting the decision threshold of the classfiier.
+		  
+		- Diagonal of an ROC graph:
+			- Can be interpreted as random guessing
+			- classification models that fall below the diagonal are considered as worse
+			  than random guessing.
+			- A perfect classifier would fall into the top-left corner of the graph 
+					- It would have a TPR of 1 and an FPR of 0
+					
+			- Based on the ROC curve, we can then copute the so-called ROC area under the curve (ROC AUC)
+					- This characterizes the performance of a classification model
+		
+		- We can also compute precision-recall curves for different probability thresholds of a classifier
+			- Documented at:
+					- http://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_recall_curve.html
 	
 	Scoring metrics for multiclass classification
 	-------------------------------------------------------------------

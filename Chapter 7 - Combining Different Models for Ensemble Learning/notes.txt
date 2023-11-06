@@ -1,0 +1,166 @@
+About
+
+	In this chapter, we will build upon techniques for tuning and evaluating different 
+	models for classification and explore different methods for constructing a set of
+	classifiers that can often have a better predictive performance than any of its
+	individual members
+	
+	We will learn the following:
+		- Make predictions based on majority voting
+		- Use bagging to reduce overfitting by drawing random combinations of the training dataset 
+		  with repetition
+		- Apply boosting to build pwerful models from weak learners that learn from their mistakes
+		
+		
+	
+	
+	Learning with ensembles
+	------------------------------------------------------------
+		- The goal of *ensemble methods* is to combine different classifers into a meta-classifier that has 
+		  better generalization performance than each individual classifier alone
+		  	- For example: assuming that we collected predictions from 10 experts,
+		  				   ensemble methods would allow us to combine these predictions
+	
+		- Ensembles are recognized for yielding a good generalization performance
+		
+		- We are focusing on methods that use the *majority voting* principle
+				- Simply put, we select the class label that has been predicted by the majority 
+				  of classifiers (received 50% of the votes)	
+				- "majority vote" applies to binary class settings only
+					- We can generalize the majority voting principle to multiclass settings
+							- called *plurality voting**
+									- This is when we select the class label that received
+									  the most votes (the mode)
+									  
+		- We start by training "m" different classifiers (C1, ... , Cm)
+		- Then we select the class label, y_hat, that received the most votes
+			- y_hat = mode{C1(x), C2(x), ... , Cm(x)}
+		- For example, in a binary classification task where class1 = -1 and class2 = +1, we
+		  can write the majority vote predictions as follows:
+				-C(x) = sign[sum(from j to m)[Cj(x)]] = 
+														^  1 if sum(from j to _)[Cj(x)] >= 0
+														^ -1 otherwise 
+														\
+			The binomial coefficient
+			-------------------------------------------
+				- The binomial coefficient refers to the number of ways we can choose
+				  subsets of k-unordered elements from a set of size n; thus, it is often 
+				  called "n choose k". Since the order does not matter here, the binomial 
+				  coefficient is also sometimes referred to as "combination" or "combinatorial number", 
+				  and in its unabbreaviated form, it is writen as follow
+				  		- (n!)/((n-k)!*k!
+			
+			Probability mass function (ensemble error function)
+			----------------------------------------
+			from scipy.special import comb
+			import math
+			def ensemble_error(n_classifier, error):
+				k_start = int(math.ceil(n_classifier / 2.))
+				probs = [comb(n_classifier, k) *
+						error**k *
+						(1-error)**(n_classifier - k)
+						for k in range(k_start, n_classifier + 1)]
+				return sum(probs)
+			ensemble_error(n_classifier=11, error=0.25)
+			
+			CODE (visualize relationship between ensemble and base errors in a line graph)
+			-----------------------------------------------------------------------------------
+			import numpy as np
+			import matplotlib.pyplot as plt
+			error_range = np.arrange(0.0, 1.01, 0.01)
+			ens_error = [ensemble_error(n_classifier=11, error=error)
+						 for error in error_range]
+			plt.plot(error_range, ens_errors, label='Ensemble error', linewidth=2)
+			plt.plot(error_range, error_range,
+						linestyle='--', label='Base error',
+						linewidth=2)
+			plt.xlabel('Base error')
+			plt.ylabel('Base/Ensemble error')
+			plt.legend(loc='upper left')
+			plt.grid(alpha=0.5)
+			plt.show()
+			
+	Combining classifiers via majority vote
+	------------------------------------------------------------
+		- Setting up a simple ensemble classifier for majority voting in Python
+		
+		PLURALITY VOTING
+		-------------------------------
+		 - Although the majority voting algorithm that we will discuss in this section also generalizes to
+		   multiclass settings via plurality voting, then the term "majority voting" will be used for simplicity,
+		   as is often the case in the literature
+	
+	Implementing a simple majority vote classifier
+	------------------------------------------------------------
+		- The alogirhtm we are going to implement in this section will allow us to
+		  combine different classification algorithms associated with individual weights 
+		  for confidence. Our goal is to build a stronger meta-classifier that balances out 
+		  the individual classifier's weaknesses on a particular dataset. In more precise
+		  mathematical terms, we can write the weighted majority vote as follows:
+		  
+		  	y_hat = arg max(sum_j=1_to_m(WjXa(Cj(x) = i)
+		  	
+		  		- Here, wj is a weight associated with a base classifier, Cj; y_hat is the predicted class label 
+		  		  of the ensemble; A is the set of unique class labels; Xa(Greek chi) is the characteristic function
+		  		  or indicator function, which returns 1 if the predicted class of the jth
+		  		  classifier matches i (Cj(x) = i). For equal weights, we can simplify this equation
+		  		  and write it as follows:
+		  		  		- y_hat = mode{C1(x), C2(x), ..., Cm(x)}
+		  To better understand the concept of weighting, we will now take a look at a more
+		  concrete example.
+		  
+		  CODE
+		  -----------------------------------------
+		  import numpy as np
+		  np.argmax(np.bincount([0,0,1], 
+		  				weights=[0.2, 0.2, 0.6]))
+		  				
+		  -----------------------------------------------------------
+		  
+		  - Certain classifiers in scikit-learn can also return the probability of
+		    a predicted class label via the predict_proba method. 
+		  - Using the predicted class probabilites instead of the class labels for majority
+		    voting can be useful if the classifiers in our ensemble are well calibrated.
+		  - The modified version of the mjaority vote for predicting calss albels from probabilites
+		     can be writeen as follows: 
+		        - y_hat = arg max(sum[j=1_to_m](wj*pi,j)
+		        		- Here, pi,j is the predicted probability of the jth classifier for class
+		        		  label i.
+		  - To continue with our previous example, let's assume that we have 
+		  
+		  To implement the weighted majority vote based on class probabilites, we can
+		  again make use of NumPy, using np.average and np.argmax
+		  
+		  	CODE
+		  	-------------------------------
+		  	ex = np.array([0.9, 0.1],
+		  				   [0.8, 0.2],
+		  				   [0.4, 0.6])
+		  	p = np.average(ex, axis=0, weights=[0.2, 0.2, 0.6])
+		  	p
+		  		
+	
+	Using the majority voting principle to make predictions
+	------------------------------------------------------------
+	
+	Evaluating and tuning the ensemble classifier
+	------------------------------------------------------------
+	
+	Bagging - building an ensemble of classifiers from bootstrap samples
+	------------------------------------------------------------------------------------------
+	
+	Applying bagging to classify examples in the Wine dataset
+	------------------------------------------------------------
+	
+	Leveraging weak learners via adaptive boosting
+	------------------------------------------------------------
+	
+	How boosting works
+	------------------------------------------------------------------------
+	
+	Applying AdaBoost using scikit-learn
+	------------------------------------------------------------------------
+	
+	Summary
+	------------------------------------------------------------------------
+	
